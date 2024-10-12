@@ -1,4 +1,5 @@
 package com.pinmi.react.printer.adapter;
+
 import static com.pinmi.react.printer.adapter.UtilsImage.getPixelsSlow;
 import static com.pinmi.react.printer.adapter.UtilsImage.recollectSlice;
 
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.BitmapFactory;
+
 import androidx.annotation.RequiresApi;
 
 /**
@@ -185,8 +187,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
                 this.mNetDevice = new NetPrinterDevice(netPrinterDeviceId.getHost(), netPrinterDeviceId.getPort());
                 sucessCallback.invoke(this.mNetDevice.toRNWritableMap());
             } else {
-                errorCallback.invoke("unable to build connection with host: " + netPrinterDeviceId.getHost()
-                        + ", port: " + netPrinterDeviceId.getPort());
+                errorCallback.invoke("unable to build connection with host: " + netPrinterDeviceId.getHost() + ", port: " + netPrinterDeviceId.getPort());
                 return;
             }
         } catch (IOException e) {
@@ -220,20 +221,31 @@ public class NetPrinterAdapter implements PrinterAdapter {
         final String rawData = rawBase64Data;
         final Socket socket = this.mSocket;
         Log.v(LOG_TAG, "start to print raw data " + rawBase64Data);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    byte[] bytes = Base64.decode(rawData, Base64.DEFAULT);
-                    OutputStream printerOutputStream = socket.getOutputStream();
-                    printerOutputStream.write(bytes, 0, bytes.length);
-                    printerOutputStream.flush();
-                } catch (IOException e) {
-                    Log.e(LOG_TAG, "failed to print data" + rawData);
-                    e.printStackTrace();
-                }
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    byte[] bytes = Base64.decode(rawData, Base64.DEFAULT);
+//                    OutputStream printerOutputStream = socket.getOutputStream();
+//                    printerOutputStream.write(bytes, 0, bytes.length);
+//                    printerOutputStream.flush();
+//                } catch (IOException e) {
+//                    Log.e(LOG_TAG, "failed to print data" + rawData);
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+
+        try {
+            byte[] bytes = Base64.decode(rawData, Base64.DEFAULT);
+            OutputStream printerOutputStream = socket.getOutputStream();
+            printerOutputStream.write(bytes, 0, bytes.length);
+            printerOutputStream.flush();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "failed to print data" + rawData);
+            e.printStackTrace();
+            errorCallback.invoke("failed to print data");
+        }
 
     }
 

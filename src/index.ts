@@ -603,18 +603,25 @@ const NetPrinter = {
    * @param opts
    */
   printImageBase64: function (Base64: string, opts: PrinterImageOptions = {}) {
+    let res = "OK";
     if (Platform.OS === "ios") {
-      RNNetPrinter.printImageBase64(Base64, opts, (error: Error) =>
-        console.warn(error)
-      );
+      RNNetPrinter.printImageBase64(Base64, opts, (error: Error) => {
+        console.warn(error);
+        res = "ERRROR";
+      });
     } else {
       RNNetPrinter.printImageBase64(
         Base64,
         opts?.imageWidth ?? 0,
         opts?.imageHeight ?? 0,
-        (error: Error) => console.warn(error)
+        (error: Error) => {
+          console.warn(error);
+          res = "ERRROR";
+        }
       );
     }
+
+    return res;
   },
 
   printImageBase64Async: function (
