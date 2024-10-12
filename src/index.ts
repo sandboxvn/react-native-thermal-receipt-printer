@@ -348,7 +348,7 @@ const BLEPrinter = {
       RNBLEPrinter.printRawData(
         processedText.text,
         processedText.opts,
-        function (error) {
+        function (error: Error) {
           return console.warn(error);
         }
       );
@@ -446,6 +446,42 @@ const NetPrinter = {
     }
   },
 
+  printTextAsync: (text: string, opts = {}): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        if (Platform.OS === "ios") {
+          const processedText = textPreprocessingIOS(text, false, false);
+          RNNetPrinter.printRawData(
+            processedText.text,
+            processedText.opts,
+            (error: Error) => {
+              if (error) {
+                console.warn(error);
+                reject(error);
+              } else {
+                resolve();
+              }
+            }
+          );
+        } else {
+          RNNetPrinter.printRawData(
+            textTo64Buffer(text, opts),
+            (error: Error) => {
+              if (error) {
+                console.warn(error);
+                reject(error);
+              } else {
+                resolve();
+              }
+            }
+          );
+        }
+      } catch (exception) {
+        reject(exception);
+      }
+    });
+  },
+
   printBill: (text: string, opts: PrinterOptions = {}): void => {
     if (Platform.OS === "ios") {
       const processedText = textPreprocessingIOS(
@@ -464,6 +500,47 @@ const NetPrinter = {
       );
     }
   },
+
+  printBillAsync: (text: string, opts: PrinterOptions = {}): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        if (Platform.OS === "ios") {
+          const processedText = textPreprocessingIOS(
+            text,
+            opts?.cut ?? true,
+            opts.beep ?? true
+          );
+          RNNetPrinter.printRawData(
+            processedText.text,
+            processedText.opts,
+            (error: Error) => {
+              if (error) {
+                console.warn(error);
+                reject(error);
+              } else {
+                resolve();
+              }
+            }
+          );
+        } else {
+          RNNetPrinter.printRawData(
+            billTo64Buffer(text, opts),
+            (error: Error) => {
+              if (error) {
+                console.warn(error);
+                reject(error);
+              } else {
+                resolve();
+              }
+            }
+          );
+        }
+      } catch (exception) {
+        reject(exception);
+      }
+    });
+  },
+
   /**
    * image url
    * @param imgUrl
@@ -483,6 +560,43 @@ const NetPrinter = {
       );
     }
   },
+
+  printImageAsync: (
+    imgUrl: string,
+    opts: PrinterImageOptions = {}
+  ): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        if (Platform.OS === "ios") {
+          RNNetPrinter.printImageData(imgUrl, opts, (error: Error) => {
+            if (error) {
+              console.warn(error);
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        } else {
+          RNNetPrinter.printImageData(
+            imgUrl,
+            opts?.imageWidth ?? 0,
+            opts?.imageHeight ?? 0,
+            (error: Error) => {
+              if (error) {
+                console.warn(error);
+                reject(error);
+              } else {
+                resolve();
+              }
+            }
+          );
+        }
+      } catch (exception) {
+        reject(exception);
+      }
+    });
+  },
+
   /**
    * base 64 string
    * @param Base64
@@ -503,6 +617,42 @@ const NetPrinter = {
     }
   },
 
+  printImageBase64Async: function (
+    base64: string,
+    opts: PrinterImageOptions = {}
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        if (Platform.OS === "ios") {
+          RNNetPrinter.printImageBase64(base64, opts, (error: Error) => {
+            if (error) {
+              console.warn(error);
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        } else {
+          RNNetPrinter.printImageBase64(
+            base64,
+            opts?.imageWidth ?? 0,
+            opts?.imageHeight ?? 0,
+            (error: Error) => {
+              if (error) {
+                console.warn(error);
+                reject(error);
+              } else {
+                resolve();
+              }
+            }
+          );
+        }
+      } catch (exception) {
+        reject(exception);
+      }
+    });
+  },
+
   /**
    * Android print with encoder
    * @param text
@@ -512,6 +662,26 @@ const NetPrinter = {
     } else {
       RNNetPrinter.printRawData(text, (error: Error) => console.warn(error));
     }
+  },
+
+  printRawAsync: (text: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      try {
+        if (Platform.OS === "ios") {
+        } else {
+          RNNetPrinter.printRawData(text, (error: Error) => {
+            if (error) {
+              console.warn(error);
+              reject(error);
+            } else {
+              resolve(error);
+            }
+          });
+        }
+      } catch (exception) {
+        reject(exception);
+      }
+    });
   },
 
   /**
