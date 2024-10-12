@@ -349,7 +349,7 @@ public class NetPrinterAdapter implements PrinterAdapter {
         } catch (IOException e) {
             Log.e(LOG_TAG, "failed to print data");
             e.printStackTrace();
-            errorCallback.invoke("Error", "failed to print data");
+            errorCallback.invoke("failed to print data");
         }
     }
 }
