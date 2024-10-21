@@ -358,7 +358,6 @@ public class NetPrinterAdapter implements PrinterAdapter {
             printerOutputStream.write(LINE_FEED);
 
             printerOutputStream.flush();
-            errorCallback.invoke(null);
         } catch (IOException e) {
             Log.e(LOG_TAG, "failed to print data");
             e.printStackTrace();
